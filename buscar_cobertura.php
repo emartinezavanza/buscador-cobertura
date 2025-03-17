@@ -3,7 +3,7 @@
 $host = "hl813.dinaserver.com";
 $dbname = "avanza_cobertura";
 $user = "avanza_cobertura";
-$pass = "n[Zf8tNw1k5ie8!t";
+$pass = ;
 
 // Recibir datos del formulario
 $provincia = $_POST['provincia'];

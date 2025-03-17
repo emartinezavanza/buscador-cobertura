@@ -1,0 +1,118 @@
+/* Estilos generales */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    text-align: center;
+}
+
+/* Contenedor principal */
+.container {
+    width: 60%;
+    margin: auto;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Título */
+h2 {
+    color: #0044cc;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* Subtítulo */
+p {
+    color: #666;
+    font-size: 14px;
+}
+
+/* Estructura de los campos del formulario */
+.form-group {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.input-group {
+    width: 48%;
+}
+
+/* Inputs y selects */
+input, select {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+/* Teléfono */
+.phone-container {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    padding: 10px;
+}
+
+.phone-container img {
+    width: 25px;
+    margin-right: 10px;
+}
+
+.phone-container input {
+    border: none;
+    background: none;
+    width: 100%;
+}
+
+/* Checkbox y enlaces */
+.terms {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.terms input {
+    margin-right: 10px;
+}
+
+.terms a {
+    color: #0044cc;
+    text-decoration: none;
+}
+
+/* Botón principal */
+button {
+    width: 100%;
+    padding: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    background-color: #0044cc;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+button:hover {
+    background-color: #0033a0;
+}
+
+.terms {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Espaciado entre checkbox y texto */
+}
+
+.terms input {
+    margin: 0; /* Elimina el espacio extra */
+    width: 16px;
+    height: 16px;
+}

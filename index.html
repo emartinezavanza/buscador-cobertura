@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprobador de Cobertura</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+        .container {
+            width: 50%;
+            margin: auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0px 0px 10px 0px gray;
+            border-radius: 10px;
+        }
+        select, input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid gray;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <!-- jQuery UI para Autocomplete -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h2>COMPRUEBA TU COBERTURA</h2>
+        <p>Introduce tu dirección y datos de contacto para consultar si la fibra óptica de Avanza Fibra llega a tu casa y ver las ofertas que tienes disponibles.</p>
+        <select id="provincia">
+            <option value="">Seleccione una provincia</option>
+        </select>
+        <select id="municipio" disabled>
+            <option value="">Seleccione un municipio</option>
+        </select>
+        <select id="tipo_via" disabled>
+            <option value="">Seleccione tipo de vía</option>
+        </select>
+        <!-- Campo de entrada para búsqueda dinámica de calles -->
+        <input type="text" id="direccion" placeholder="Escriba la calle" autocomplete="off" class="form-control" disabled>
+        <select id="numero" disabled>
+            <option value="">Seleccione número</option>
+        </select>
+        <select id="piso" disabled>
+            <option value="">Seleccione piso</option>
+        </select>
+         <!-- copia y pega de chat gpt-->
+ <div class="form-group">
+    <input type="tel" id="telefono" placeholder="Número de teléfono">
+    <input type="email" id="email" placeholder="Correo electrónico">
+</div>
+<p id="telefono-error" class="error-message" style="color:red; display:none;">⚠️ Introduce un número de teléfono válido.</p>
+<p id="email-error" class="error-message" style="color:red; display:none;">⚠️ Introduce un correo electrónico válido.</p>
+
+<p><a href="https://avanzafibra.com/contacto/">Si no encuentras tu dirección, puedes consultar tu cobertura</a></p>
+        <button id="comprobar" disabled>comprobar</button>
+
+      <!-- Check obligatorio -->
+      <div class="terms">
+        
+            <div class="terms">
+                <input type="checkbox" id="privacidad"> 
+                <label for="privacidad">He leído y acepto la <a href="#">política de privacidad de datos</a></label>
+                <p id="privacidad-error" class="error-message">⚠️ Debes aceptar la política de privacidad.</p>
+            </div>   
+            </div>
+
+            <div class="terms">
+                <input type="checkbox" id="comercial">
+                <label for="comercial">Acepto recibir comunicaciones comerciales de Avanza Fibra</label>
+            </div>
+
+            </div>
+
+        
+
+
+    <script>
+        
+        $(document).ready(function() {
+            // Validar número de teléfono
+            $('#telefono').on('input', function() {
+                var telefono = $(this).val();
+                var regexTelefono = /^[0-9]{9}$/;
+                if (!regexTelefono.test(telefono)) {
+                    $('#telefono-error').show();
+                } else {
+                    $('#telefono-error').hide();
+                }
+            });
+            
+            // Validar correo electrónico
+            $('#email').on('input', function() {
+                var email = $(this).val();
+                if (!email.includes('@')) {
+                    $('#email-error').show();
+                } else {
+                    $('#email-error').hide();
+                }
+            });
+            
+            // Habilitar botón de comprobación cuando se seleccione un piso y datos válidos
+            function validarFormulario() {
+                var pisoSeleccionado = $('#piso').val();
+                var telefonoValido = /^[0-9]{9}$/.test($('#telefono').val());
+                var emailValido = $('#email').val().includes('@');
+                var privacidadAceptada = $('#privacidad').is(':checked');
+                
+                $('#comprobar').prop('disabled', !(pisoSeleccionado && telefonoValido && emailValido && privacidadAceptada));
+            }
+            
+            $('#piso, #telefono, #email, #privacidad').on('change input', validarFormulario);
+             // Hacer obligatorio el check de privacidad
+         $('#privacidad').change(function() {
+                if ($(this).is(':checked')) {
+                    $('#privacidad-error').hide();
+                } else {
+                    $('#privacidad-error').show();
+                }
+                validarFormulario();
+            });
+           
+        });
+
+   
+
+    </script>
+
+
+
+    <script>
+        $(document).ready(function() {
+            // Cargar provincias
+            $.getJSON('get_provincias.php', function(data) {
+                $.each(data, function(key, value) {
+                    $('#provincia').append('<option value="' + value + '">' + value + '</option>');
+                });
+            });
+
+            // Cargar municipios cuando se seleccione una provincia
+            $('#provincia').change(function() {
+                var provincia = $(this).val();
+                $('#municipio').html('<option value="">Seleccione un municipio</option>').prop('disabled', true);
+
+                if (provincia) {
+                    $.getJSON('get_municipios.php?provincia=' + provincia, function(response) {
+                        if (response.municipios) {
+                            $.each(response.municipios, function(index, municipio) {
+                                $('#municipio').append('<option value="' + municipio + '">' + municipio + '</option>');
+                            });
+                            $('#municipio').prop('disabled', false);
+                        } else {
+                            $('#municipio').html('<option value="">No hay municipios disponibles</option>').prop('disabled', true);
+                        }
+                    });
+                }
+            });
+
+            // Cargar tipos de vía cuando se seleccione un municipio
+            $('#municipio').change(function() {
+                var provincia = $('#provincia').val();
+                var municipio = $(this).val();
+                $('#tipo_via').html('<option value="">Seleccione tipo de vía</option>').prop('disabled', true);
+
+                if (municipio && provincia) {
+                    $.getJSON('get_tipo_via.php?provincia=' + encodeURIComponent(provincia) + '&municipio=' + encodeURIComponent(municipio), function(response) {
+                        if (response.tipos_via && Array.isArray(response.tipos_via) && response.tipos_via.length > 0) {
+                            $.each(response.tipos_via, function(index, tipo) {
+                                $('#tipo_via').append('<option value="' + tipo + '">' + tipo + '</option>');
+                            });
+                            $('#tipo_via').prop('disabled', false);
+                        } else {
+                            $('#tipo_via').html('<option value="">⚠️ No hay tipos de vía disponibles</option>').prop('disabled', true);
+                        }
+                    });
+                }
+            });
+
+            // Autocompletado de direcciones basado en lo que escribe el usuario
+            $('#tipo_via').change(function() {
+                var provincia = $('#provincia').val().trim();
+                var municipio = $('#municipio').val().trim();
+                var tipoVia = $(this).val().trim();
+                var inputDireccion = $('#direccion');
+
+                inputDireccion.val('').prop('disabled', true);
+
+                if (provincia && municipio && tipoVia) {
+                    inputDireccion.prop('disabled', false);
+
+                    inputDireccion.autocomplete({
+                        source: function(request, response) {
+                            $.getJSON('get_sugerencias.php', {
+                                provincia: provincia,
+                                municipio: municipio,
+                                tipo_via: tipoVia,
+                                term: request.term
+                            }, function(data) {
+                                if (data.direcciones && data.direcciones.length > 0) {
+                                    response(data.direcciones);
+                                } else {
+                                    response(["⚠️ No hay direcciones"]);
+                                }
+                            });
+                        },
+                        minLength: 3, // Se activará tras escribir 3 caracteres
+                        select: function(event, ui) {
+                            if (ui.item.value !== "⚠️ No hay direcciones") {
+                                inputDireccion.val(ui.item.value).trigger("change"); // 🔥 Fuerza el cambio para cargar los números
+                            } else {
+                                inputDireccion.val('');
+                            }
+                            return false;
+                        }
+                    });
+    }
+});
+
+
+            // Cargar números cuando se seleccione una calle
+                $('#direccion').change(function() {
+                    var nombrevia = $(this).val().trim();
+                    var provincia = $('#provincia').val().trim();
+                    var municipio = $('#municipio').val().trim();
+                    var tipo_via = $('#tipo_via').val().trim();
+
+                    console.log("🔍 Buscando números -> Provincia:", provincia, "Municipio:", municipio, "Tipo de Vía:", tipo_via, "Calle:", nombrevia);
+
+                    $('#numero').html('<option value="">Seleccione número</option>').prop('disabled', true);
+
+                    if (provincia && municipio && tipo_via && nombrevia) {
+                        $.getJSON('get_numeros.php', {
+                            provincia: provincia,
+                            municipio: municipio,
+                            tipo_via: tipo_via,
+                            nombrevia: nombrevia
+                        }, function(data) {
+                            if (data.numeros && data.numeros.length > 0) {
+                                $.each(data.numeros, function(index, numero) {
+                                    $('#numero').append('<option value="' + numero + '">' + numero + '</option>');
+                                });
+                                $('#numero').prop('disabled', false);
+                            } else {
+                                $('#numero').html('<option value="">⚠️ No hay números disponibles</option>').prop('disabled', true);
+                            }
+                        }).fail(function(jqXHR, textStatus, errorThrown) {
+                            console.error("❌ Error al obtener números:", textStatus, errorThrown);
+                        });
+                    } else {
+                        console.warn("⚠️ Falta algún dato - Provincia:", provincia, "Municipio:", municipio, "Tipo de Vía:", tipo_via, "Calle:", nombrevia);
+                    }
+                });
+
+
+        // Cargar pisos cuando se seleccione un número
+            $('#numero').change(function() {
+                var numero = $(this).val().trim();
+                var nombrevia = $('#direccion').val().trim();
+                var municipio = $('#municipio').val().trim();
+                var provincia = $('#provincia').val().trim();
+                var tipo_via = $('#tipo_via').val().trim();
+
+                console.log("🔍 Buscando pisos -> Provincia:", provincia, "Municipio:", municipio, "Tipo de Vía:", tipo_via, "Calle:", nombrevia, "Número:", numero);
+
+                $('#piso').html('<option value="">Seleccione piso</option>').prop('disabled', true);
+
+                if (provincia && municipio && tipo_via && nombrevia && numero) {
+                    $.getJSON('get_pisos.php', {
+                        provincia: provincia,
+                        municipio: municipio,
+                        tipo_via: tipo_via,
+                        nombrevia: nombrevia,
+                        numero: numero
+                    }, function(data) {
+                        console.log("✅ Respuesta del servidor para pisos:", data);
+
+                        if (data.pisos && Array.isArray(data.pisos) && data.pisos.length > 0) {
+                            $.each(data.pisos, function(index, piso) {
+                                $('#piso').append('<option value="' + piso + '">' + piso + '</option>');
+                            });
+                            $('#piso').prop('disabled', false);
+                        } else {
+                            $('#piso').html('<option value="">⚠️ No hay pisos disponibles</option>').prop('disabled', true);
+                        }
+                    }).fail(function(jqXHR, textStatus, errorThrown) {
+                        console.error("❌ Error al obtener pisos:", textStatus, errorThrown);
+                    });
+                } else {
+                    console.warn("⚠️ Falta algún dato - Provincia:", provincia, "Municipio:", municipio, "Tipo de Vía:", tipo_via, "Calle:", nombrevia, "Número:", numero);
+                }
+            });
+
+
+
+            // Habilitar botón de comprobación cuando se seleccione un piso
+            $('#piso').change(function() {
+                $('#comprobar').prop('disabled', $(this).val() ? false : true);
+            });
+
+         
+        });
+        
+    </script>
+
+    <!-- Contenedor del iframe oculto -->
+<div class="iframe-container" id="iframeContainer" style="display: none; margin-top: 20px;">
+    <h3>Resultados de la cobertura:</h3>
+    <iframe id="resultadoCobertura" width="100%" height="500px" style="border: none;"></iframe>
+</div>
+
+<script>
+    // Acción del botón de comprobación
+    $('#comprobar').click(function() {
+        if ($('#privacidad').is(':checked')) {
+            var poblacion = $('#municipio').val().trim().toUpperCase(); // Obtiene y normaliza la población
+
+            // Verifica si la población es "CARAVACA"
+            var url = (poblacion === "CARAVACA") 
+                ? "https://avanzafibra.com/cobertura/" 
+                : "https://avanzafibra.com/internet-fibra-optica/";
+
+            $('#resultadoCobertura').attr('src', url);
+            $('#iframeContainer').fadeIn(); // Muestra el iframe con efecto suave
+        } else {
+            $('#privacidad-error').show();
+        }
+    });
+</script>
+
+
+</body>
+</html>

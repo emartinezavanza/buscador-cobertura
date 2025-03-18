@@ -3,7 +3,7 @@
 $host = "hl813.dinaserver.com";
 $dbname = "avanza_cobertura";
 $user = "avanza_cobertura";
-$pass = ;
+$pass = "]*n2nv)W*6A2_@t(";
 
 // Recibir datos del formulario
 $provincia = $_POST['provincia'];
@@ -77,4 +77,6 @@ function guardarEnExcel($provincia, $municipio, $calle, $numero, $piso, $telefon
     fputcsv($file, $datos);
     fclose($file);
 }
+
+
 ?>

@@ -1,6 +1,6 @@
 <?php
 // Datos de conexión
-$host = "hl813.dinaserver.com";
+$host = "";
 $dbname = "avanza_cobertura";
 $user = "avanza_cobertura";
 $pass = "";
